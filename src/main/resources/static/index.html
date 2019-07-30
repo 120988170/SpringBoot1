@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>查删</title>
+</head>
+<body>
+	<table border="1" width="500">
+		<thead>
+			<tr style="background-color: #EFEFEF">
+				<th>部门ID</th>
+				<th>部门名称</th>
+			</tr>
+		</thead>
+		<tbody id="cnt">
+
+		</tbody>
+	</table>
+</body>
+<script type="text/javascript" src="/js/jquery-1.12.4.js"></script>
+<script type="text/javascript">
+	//加载消息列表
+	function loadMessageList() {
+		$.ajax("/c/departments/", {
+			type : "GET",
+			dataType : "json",
+			timeout : 5000,
+			success : function(pageinfo) {
+				console.log(pageinfo)
+				$("#cnt").empty();
+				$.each(pageinfo, function(i, item) {
+					$("#cnt").append(
+							"<tr><td>" + item.did + "</td><td><a href='javascript:void(0)' class='lsc_table'>"
+									+ item.dname + "</a></td></tr>");
+				});
+			}
+		});
+	}
+	loadMessageList();
+	
+	$(document).on("click", ".lsc_table", function() {
+		//获取ID
+		var did = $(this).parent().prev().text();
+		//根据ID查询成员并加载到
+		var dhtml= $(this).parent().parent();
+		$.ajax("/c/staffs?did="+did, {
+			type : "GET",
+			dataType : "json",
+			timeout : 5000,
+			success : function(data) {      
+				$(dhtml).html();
+				var table_1="<tr><table>";
+				table_1+="<tr><td>ID</td><td>姓名</td><td>地址</td><td>邮箱</td><td>操作</td></tr>";
+				$.each(data, function(i, item) {
+					table_1+="<tr><td>" + item.sid + "</td><td>"
+									+ item.sname + "</td><td>"
+									+ item.address + "</td><td>"
+									+ item.email + "</td><td><button class='delete_sid'>删除</button><input type='hidden' value='"+item.sid+"'></td>"
+									+"</tr>";
+				});
+				table_1+="</table></tr>";
+				$(dhtml).append(table_1);
+			}
+		});
+	}
+);
+	
+	
+	$(document).on("click", ".delete_sid", function() {
+		var sid = $(this).next().val();
+		if(confirm('是否移除？')){
+			$.ajax({
+				url:"/c/staffs/staff",
+				type:"delete",
+				data:{
+					sid:sid
+				},success:function(obj){
+					alert(obj.code);
+					if(obj.msg>-1){
+						alert("该部门还有："+obj.msg+"名员工");
+					}
+				}
+			})
+		}
+	});
+</script>
+</html>

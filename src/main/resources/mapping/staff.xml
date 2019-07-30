@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.accp.dao.StaffDao">
+
+	<select id="selectByDid" resultType="com.accp.pojo.Staff">
+		SELECT * FROM staff WHERE did=#{0};   
+	</select>
+	
+	<select id="selectBySid" resultType="com.accp.pojo.Staff">
+		SELECT * FROM staff WHERE sid=#{0};   
+	</select>
+	
+	<delete id="delete" >
+		delete from staff where sid=#{0}
+	</delete>
+</mapper>   
